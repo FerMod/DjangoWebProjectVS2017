@@ -4,10 +4,16 @@ Definition of models.
 
 from django.db import models
 from django.db.models.fields import CharField
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
+    subject = models.CharField(max_length=200)
+    #number_responses = models.IntegerField(
+    #    default=2, 
+    #    validators=[MaxValueValidator(4), MinValueValidator(2)]
+    #)
     pub_date = models.DateTimeField('date published')
 
 class Choice(models.Model):

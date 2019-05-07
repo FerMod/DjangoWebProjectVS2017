@@ -103,16 +103,17 @@ def question_new(request):
 
 def choice_add(request, question_id):
         question = Question.objects.get(id = question_id)
-        if request.method =='POST':
-            form = ChoiceForm(request.POST)
-            if form.is_valid():
-                choice = form.save(commit = False)
-                choice.question = question
-                choice.vote = 0
-                choice.save()         
-                #form.save()
-        else: 
-            form = ChoiceForm()
+        if question.choice_set.count() < 4:
+            if request.method =='POST':
+                form = ChoiceForm(request.POST)
+                if form.is_valid():
+                    choice = form.save(commit = False)
+                    choice.question = question
+                    choice.vote = 0
+                    choice.save()         
+                    #form.save()
+            else: 
+                form = ChoiceForm()
         #return render_to_response ('choice_new.html', {'form': form, 'poll_id': poll_id,}, context_instance = RequestContext(request),)
         return render(request, 'polls/choice_new.html', {'title':'Pregunta:'+ question.question_text,'form': form})
 

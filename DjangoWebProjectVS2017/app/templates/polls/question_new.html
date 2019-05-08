@@ -4,17 +4,35 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
-{% if error_message %}
-<p>
-    <strong style="color:red;"><b>{{ error_message }}</b></strong>
-</p>
-{% endif %}
-
-<h1>Insertar una pregunta</h1>
-        <form method="POST" class="post-form">{% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="save btn btn-default">Save</button>
-        </form>
-<a href="{% url 'index' %}">Ver preguntas</a> 
-
+<div class="row">
+    <div class="col-md-8">
+        <section id="questionForm">
+            <form method="POST" class="form-horizontal">
+                {% csrf_token %}
+                <h4>Insertar una pregunta</h4>
+                <hr />
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.auto_id }}" class="col-md-2 control-label">{{ field.label_tag }}</label>
+                    <div class="col-md-10">
+                        {{ field }}
+                    </div>
+                    <p class="validation-summary-errors">{{ field.errors.as_text }}</p>
+                </div>
+                {% endfor %}
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" />
+                    </div>
+                </div>
+                {% if form.errors or error_message %}
+                <p class="validation-summary-errors">{{ error_message }}</p>
+                {% endif %}
+            </form>
+        </section>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'index' %}">Ver preguntas</a>
+    </div>
+</div>
 {% endblock %}

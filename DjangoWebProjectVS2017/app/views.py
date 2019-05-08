@@ -89,37 +89,39 @@ def vote(request, question_id):
         return HttpResponseRedirect(reverse('results', args=(p.id,)))
 
 def question_new(request):
-        if request.method == "POST":
-            form = QuestionForm(request.POST)
-            if form.is_valid():
-                question = form.save(commit=False)
-                question.pub_date=datetime.now()
-                question.save()
-                #return redirect('detail', pk=question_id)
-                #return render(request, 'polls/index.html', {'title':'Respuestas posibles','question': question})
-        else:
-            form = QuestionForm()
-        return render(request, 'polls/question_new.html', {'form': form})
+    if request.method == "POST":
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.pub_date=datetime.now()
+            question.save()
+            #return redirect('detail', pk=question_id)
+            #return render(request, 'polls/index.html', {'title':'Respuestas posibles','question': question})
+            return redirect('index')
+    else:
+        form = QuestionForm()
+    return render(request, 'polls/question_new.html', {'form': form})
 
 def choice_add(request, question_id):
-        
-        question = Question.objects.get(id = question_id)
-        if question.choice_set.count() >= 4:
-            return render(request, HttpResponseRedirect(request.META.get('HTTP_REFERER'), {'error_message': 'Todas las respuestas introducidas'},)
-            #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        if request.method =='POST':
-            form = ChoiceForm(request.POST)
-            if form.is_valid():
-                choice = form.save(commit = False)
-                choice.question = question
-                choice.vote = 0
-                choice.save()         
-                #form.save()
-        else: 
-            form = ChoiceForm()
+    question = Question.objects.get(id = question_id)
+
+    if request.method =='POST':
+        form = ChoiceForm(request.POST)
+        if form.is_valid():
+            choice = form.save(commit = False)
+            choice.question = question
+            choice.vote = 0
+            choice.save()         
+            #form.save()
+    else: 
+        form = ChoiceForm()
+
+    if question.choice_set.count() < question.number_responses:
         #return render_to_response ('choice_new.html', {'form': form, 'poll_id': poll_id,}, context_instance = RequestContext(request),)
         return render(request, 'polls/choice_new.html', {'title':'Pregunta:'+ question.question_text,'form': form})
+    else:
+        return redirect('index')
 
 def chart(request, question_id):
     q=Question.objects.get(id = question_id)

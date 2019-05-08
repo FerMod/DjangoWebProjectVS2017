@@ -5,7 +5,11 @@
 <h3>{{ message }}</h3>
 
 <h3>Pregunta: {{ question.question_text }}</h3>
-{% if error_message %}<p><strong style="color:red;"><b>{{ error_message }}</b></strong></p>{% endif %}
+{% if error_message %}
+<p>
+    <strong style="color:red;"><b>{{ error_message }}</b></strong>
+</p>
+{% endif %}
 <form action="{% url 'vote' question.id %}" method="post">
 {% csrf_token %}
 {% for choice in question.choice_set.all %}

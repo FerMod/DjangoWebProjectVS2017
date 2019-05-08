@@ -4,6 +4,12 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
+{% if error_message %}
+<p>
+    <strong style="color:red;"><b>{{ error_message }}</b></strong>
+</p>
+{% endif %}
+
 <h1>Insertar una pregunta</h1>
         <form method="POST" class="post-form">{% csrf_token %}
             {{ form.as_p }}

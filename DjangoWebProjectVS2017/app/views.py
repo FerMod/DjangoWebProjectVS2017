@@ -92,7 +92,12 @@ def question_new(request):
     if request.method == "POST":
         form = QuestionForm(request.POST)
         if form.is_valid():
+
             question = form.save(commit=False)
+
+            if question.correct_answer > question.number_responses:
+                return render(request, 'polls/question_new.html', {'form': form, 'error_message': 'The correct answer number must be an existing one.'})
+            
             question.pub_date=datetime.now()
             question.save()
             #return redirect('detail', pk=question_id)
@@ -105,23 +110,27 @@ def question_new(request):
 def choice_add(request, question_id):
 
     question = Question.objects.get(id = question_id)
+    is_correct_choice = question.correct_answer == question.choice_set.count()+1
 
     if request.method =='POST':
         form = ChoiceForm(request.POST)
         if form.is_valid():
             choice = form.save(commit = False)
+            choice.is_correct_answer = is_correct_choice
             choice.question = question
             choice.vote = 0
             choice.save()         
             #form.save()
+            # Redirect to the same page, clearing the form in the process
+            return HttpResponseRedirect('')
     else: 
         form = ChoiceForm()
 
     if question.choice_set.count() < question.number_responses:
         #return render_to_response ('choice_new.html', {'form': form, 'poll_id': poll_id,}, context_instance = RequestContext(request),)
-        return render(request, 'polls/choice_new.html', {'title':'Pregunta:'+ question.question_text,'form': form})
+        return render(request, 'polls/choice_new.html', {'title':'Pregunta:'+ question.question_text, 'form': form, 'is_correct_choice': is_correct_choice})
     else:
-        return redirect('index')
+        return HttpResponseRedirect('index')
 
 def chart(request, question_id):
     q=Question.objects.get(id = question_id)

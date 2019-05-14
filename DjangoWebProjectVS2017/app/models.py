@@ -12,14 +12,18 @@ class Question(models.Model):
     subject = models.CharField(default='', max_length=200)
     number_responses = models.IntegerField(
         default=2, 
-        validators=[MaxValueValidator(4), MinValueValidator(2)]
+        validators=[MinValueValidator(2), MaxValueValidator(4)]
+    )
+    correct_answer = models.IntegerField(
+        default=1, 
+        validators=[MinValueValidator(1), MaxValueValidator(4)]
     )
     pub_date = models.DateTimeField('date published')
 
 class Choice(models.Model):
     question = models.ForeignKey(Question)
     choice_text = models.CharField(max_length=200)
-    correct_answer = models.BooleanField()
+    is_correct_answer = models.BooleanField()
     votes = models.IntegerField(default=0)
 
 class User(models.Model):

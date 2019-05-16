@@ -19,40 +19,34 @@ import json
 def home(request):
     """Renders the home page."""
     assert isinstance(request, HttpRequest)
-    return render(
-        request,
+    return render(request,
         'app/index.html',
         {
             'title':'Home Page',
             'year':datetime.now().year,
-        }
-    )
+        })
 
 def contact(request):
     """Renders the contact page."""
     assert isinstance(request, HttpRequest)
-    return render(
-        request,
+    return render(request,
         'app/contact.html',
         {
             'title':'Autor de la web',
             'message':'Datos de contacto',
             'year':datetime.now().year,
-        }
-    )
+        })
 
 def about(request):
     """Renders the about page."""
     assert isinstance(request, HttpRequest)
-    return render(
-        request,
+    return render(request,
         'app/about.html',
         {
             'title':'About',
             'message':'Your application description page.',
             'year':datetime.now().year,
-        }
-    )
+        })
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')
     template = loader.get_template('polls/index.html')
@@ -64,11 +58,11 @@ def index(request):
 
 def detail(request, question_id):
      question = get_object_or_404(Question, pk=question_id)
-     return render(request, 'polls/detail.html', {'title':'Respuestas asociadas a la pregunta:','question': question})
+     return render(request, 'polls/detail.html', {'title':'Respuestas asociadas a la pregunta:', 'question': question})
 
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'title':'Resultados de la pregunta:','question': question})
+    return render(request, 'polls/results.html', {'title':'Resultados de la pregunta:', 'question': question})
 
 def vote(request, question_id):
     p = get_object_or_404(Question, pk=question_id)
@@ -84,7 +78,7 @@ def vote(request, question_id):
         selected_choice.votes += 1
         selected_choice.save()
         # Siempre devolver un HttpResponseRedirect despues de procesar
-        # exitosamente el POST de un form. Esto evita que los datos se
+        # exitosamente el POST de un form.  Esto evita que los datos se
         # puedan postear dos veces si el usuario vuelve atras en su browser.
         return HttpResponseRedirect(reverse('results', args=(p.id,)))
 
@@ -98,10 +92,11 @@ def question_new(request):
             if question.correct_answer > question.number_responses:
                 return render(request, 'polls/question_new.html', {'form': form, 'error_message': 'The correct answer number must be an existing one.'})
             
-            question.pub_date=datetime.now()
+            question.pub_date = datetime.now()
             question.save()
             #return redirect('detail', pk=question_id)
-            #return render(request, 'polls/index.html', {'title':'Respuestas posibles','question': question})
+            #return render(request, 'polls/index.html', {'title':'Respuestas
+            #posibles','question': question})
             return redirect('index')
     else:
         form = QuestionForm()
@@ -110,9 +105,9 @@ def question_new(request):
 def choice_add(request, question_id):
 
     question = Question.objects.get(id = question_id)
-    is_correct_choice = question.correct_answer == question.choice_set.count()+1
+    is_correct_choice = question.correct_answer == question.choice_set.count() + 1
 
-    if request.method =='POST':
+    if request.method == 'POST':
         form = ChoiceForm(request.POST)
         if form.is_valid():
             choice = form.save(commit = False)
@@ -127,13 +122,14 @@ def choice_add(request, question_id):
         form = ChoiceForm()
 
     if question.choice_set.count() < question.number_responses:
-        #return render_to_response ('choice_new.html', {'form': form, 'poll_id': poll_id,}, context_instance = RequestContext(request),)
-        return render(request, 'polls/choice_new.html', {'title':'Pregunta:'+ question.question_text, 'form': form, 'is_correct_choice': is_correct_choice})
+        #return render_to_response ('choice_new.html', {'form': form,
+        #'poll_id': poll_id,}, context_instance = RequestContext(request),)
+        return render(request, 'polls/choice_new.html', {'title':'Pregunta:' + question.question_text, 'form': form, 'is_correct_choice': is_correct_choice})
     else:
         return HttpResponseRedirect('index')
 
 def chart(request, question_id):
-    q=Question.objects.get(id = question_id)
+    q = Question.objects.get(id = question_id)
     qs = Choice.objects.filter(question=q)
     dates = [obj.choice_text for obj in qs]
     counts = [obj.votes for obj in qs]
@@ -151,7 +147,8 @@ def user_new(request):
                 user = form.save(commit=False)
                 user.save()
                 #return redirect('detail', pk=question_id)
-                #return render(request, 'polls/index.html', {'title':'Respuestas posibles','question': question})
+                #return render(request, 'polls/index.html',
+                #{'title':'Respuestas posibles','question': question})
         else:
             form = UserForm()
         return render(request, 'polls/user_new.html', {'form': form})

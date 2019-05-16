@@ -14,14 +14,18 @@
 <form action="{% url 'vote' question.id %}" method="post">
     
     {% csrf_token %}
-    {% for choice in question.choice_set.all %}
-
-        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-
-    {% endfor %}
 
     {% if request.user.is_authenticated %}
+
+        <div class="choices">
+            <ul>
+            {% for choice in question.choice_set.all %}
+                <li class="{% if choice.is_correct_answer %}li-correct{% else %}li-wrong{% endif %}">
+                    {{ choice.choice_text }} ({{ choice.votes }} vote{{ choice.votes|pluralize }})
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
 
         {% if question.choice_set.count < question.number_responses %}
             <a href="{% url 'choice_add' question.id %}"><h3>Insertar Opciones</h3></a> 
@@ -29,6 +33,13 @@
         <a href="{% url 'chart' question.id %}"> <h3>Ver resultado de la votacion</h3></a><br />
 
     {% else %}
+
+        {% for choice in question.choice_set.all %}
+
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+
+        {% endfor %}
 
         <input type="submit" value="Vote" />
 

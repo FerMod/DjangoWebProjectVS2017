@@ -41,10 +41,12 @@
 
         {% endfor %}
 
-        <input type="submit" value="Vote" />
+        <input type="submit" value="Vote" class="btn btn-default" />
 
     {% endif %}
-
+    <div>
+        <a href="{% url 'index' %}">Ver preguntas</a>
+    </div>
 </form>
 
 {% endblock %}

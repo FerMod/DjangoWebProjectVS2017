@@ -9,29 +9,34 @@ from django.utils.translation import ugettext_lazy as _
 
 class QuestionForm(forms.ModelForm):
 
-        class Meta:
-            model = Question
-            fields = ('question_text', 'subject', 'number_responses', 'correct_answer',)
+    class Meta:
+        model = Question
+        fields = ('question_text', 'subject', 'number_responses', 'correct_answer',)
 
 class ChoiceForm(forms.ModelForm):
 
-        class Meta:
-            model = Choice
-            fields = ('choice_text',)
+    class Meta:
+        model = Choice
+        fields = ('choice_text',)
 
 class UserForm(forms.ModelForm):
 
-        class Meta:
-            model = User
-            fields = ('email','nombre',)
+    class Meta:
+        model = User
+        fields = ('email','nombre',)
 
 class BootstrapAuthenticationForm(AuthenticationForm):
     """Authentication form which uses boostrap CSS."""
-    username = forms.CharField(max_length=254,
-                               widget=forms.TextInput({
+    username = forms.CharField(max_length = 254,
+                               widget = forms.TextInput({
                                    'class': 'form-control',
-                                   'placeholder': 'User name'}))
-    password = forms.CharField(label=_("Password"),
-                               widget=forms.PasswordInput({
+                                   'placeholder': 'User name'
+                                    }))
+    password = forms.CharField(label = _("Password"),
+                               widget = forms.PasswordInput({
                                    'class': 'form-control',
-                                   'placeholder':'Password'}))
+                                   'placeholder': 'Password'
+                                   }))
+
+class SubjectFilterForm(forms.Form):
+    subjects = forms.ModelChoiceField(queryset=Question.objects.values_list('subject', flat=True).distinct())

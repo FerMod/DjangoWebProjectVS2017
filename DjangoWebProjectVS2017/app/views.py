@@ -8,10 +8,10 @@ from django.template import RequestContext
 from datetime import datetime
 from django.http.response import HttpResponse, Http404
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import Question,Choice,User
+from .models import Question, Choice, User
 from django.template import loader
 from django.core.urlresolvers import reverse
-from app.forms import QuestionForm, ChoiceForm,UserForm
+from app.forms import QuestionForm, ChoiceForm, UserForm, SubjectFilterForm
 from django.shortcuts import redirect
 import json
 
@@ -47,14 +47,48 @@ def about(request):
             'message':'Your application description page.',
             'year':datetime.now().year,
         })
-def index(request):
+
+def index(request, subject_filter=None):
+
+    if request.method == "POST":
+        form = SubjectFilterForm(request.POST)
+        if form.is_valid:
+            #redirect to the url where you'll process the input
+            return HttpResponseRedirect(reverse('filtered_index', args=(form.subjects,))) # insert reverse or url
+    else:
+        form = SubjectFilterForm()
+
+    #subject_list = Question.objects.values_list('subject', flat=True).distinct()
     latest_question_list = Question.objects.order_by('-pub_date')
-    template = loader.get_template('polls/index.html')
-    context = {
-                'title':'Lista de preguntas de la encuesta',
-                'latest_question_list': latest_question_list,
-              }
-    return render(request, 'polls/index.html', context)
+
+    if subject_filter:
+        latest_question_list.filter(subject = subject_filter)
+    
+    #template = loader.get_template('polls/index.html')
+
+    error_message = form.errors or None # form not submitted or it has errors
+    return render(request, 'polls/index.html', {
+        'title': 'Lista de preguntas de la encuesta',
+        'latest_question_list': latest_question_list,
+        'form': form,
+        'error_message': error_message,
+    })
+
+#def show_book(request):
+    
+#    if request.method == "POST":
+#        form = SubjectFilterForm(request.POST)
+#        if form.is_valid:
+#            #redirect to the url where you'll process the input
+#            return HttpResponseRedirect(reverse('results', args=(p.id,))) # insert reverse or url
+#    else:
+#        form = SubjectFilterForm()
+
+#    error_message = form.errors or None # form not submitted or it has errors
+#    return render(request, 'path/to/template.html',{
+#            'form': form,
+#            'error_message': error_message,
+#    })
 
 def detail(request, question_id):
      question = get_object_or_404(Question, pk=question_id)

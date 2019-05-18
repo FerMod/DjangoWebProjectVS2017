@@ -4,6 +4,14 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
+<form method="POST" class="form-horizontal">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+        <input type="submit" value="Filter" class="btn btn-default" />
+    </div>
+</form>
+
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
@@ -15,7 +23,7 @@
     <p>No polls are available.</p>
 {% endif %}
 {% if request.user.is_authenticated %}
-<a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
+    <a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
 {% endif %}
 
 {% endblock %}

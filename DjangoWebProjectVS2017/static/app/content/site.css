@@ -19,6 +19,7 @@ textarea {
 /* styles for validation helpers */
 .field-validation-error {
     color: #b94a48;
+    font-weight: bold;
 }
 
 .field-validation-valid {
@@ -39,4 +40,30 @@ input[type="checkbox"].input-validation-error {
 
 .validation-summary-valid {
     display: none;
+}
+
+.choices ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.choices li {
+    padding-left: 1em;
+    text-indent: -2em;
+}
+
+.choices li:before {
+    padding-right: 5px;
+}
+
+.choices .li-correct:before {
+    content: '\2714'; /* Check mark symbol */
+    color: green;
+    font-weight: bold;
+}
+
+.choices .li-wrong:before {
+    content: '\2718'; /* Cross symbol */
+    color: red;
+    font-weight: bold;
 }

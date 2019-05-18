@@ -41,7 +41,7 @@ class BootstrapAuthenticationForm(AuthenticationForm):
 class SubjectFilterForm(forms.Form):
     subjects = forms.ChoiceField(required=False, 
                                  label='Show subjects',
-                                 widget=forms.Select(attrs={'onchange': 'this.form.submit();'}), 
+                                 # widget=forms.Select(attrs={'onchange': 'this.form.submit();'}), # On selection change, submit
                                  )
 
     def __init__(self, *args, **kwargs):

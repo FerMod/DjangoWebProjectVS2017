@@ -1,11 +1,28 @@
 ﻿{% extends "app/layout.html" %}
 
+{% block scripts %}
+<script>
+    $("#id_subjects").change(function () {
+        var form = $(this).closest("form");
+        $.ajax({
+            url: form.attr("data-update-questions-url"),
+            data: form.serialize(),
+            dataType: 'html',
+            success: function (data) {
+                var questionsDiv = $(data).find('#questions-div');
+                $('#questions-div').html(questionsDiv.html());
+            }
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
-<form method="POST" class="form-horizontal">
+<form method="POST" class="form-horizontal" data-update-questions-url="{% url 'update_questions' %}">
     {% csrf_token %}
     <div class="form-group">
         {{ form.as_p }}
@@ -13,6 +30,7 @@
 </form>
 
 {% if latest_question_list %}
+<div id="questions-div">
     <ul>
     {% for question in latest_question_list %}
         {% if not filtered_subject or filtered_subject == question.subject %}
@@ -20,6 +38,7 @@
         {% endif %}
     {% endfor %}
     </ul>
+</div>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}

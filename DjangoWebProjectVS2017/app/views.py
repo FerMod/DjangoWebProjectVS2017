@@ -7,14 +7,13 @@ from django.http import HttpRequest
 from django.template import RequestContext
 from datetime import datetime
 from django.http.response import HttpResponse, Http404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from .models import Question, Choice, User
 from django.template import loader
 from django.core.urlresolvers import reverse
 from app.forms import QuestionForm, ChoiceForm, UserForm, SubjectFilterForm
 from django.shortcuts import redirect
 import json
-
 
 def home(request):
     """Renders the home page."""
@@ -56,8 +55,9 @@ def index(request):
     if request.method == "POST":
         form = SubjectFilterForm(request.POST)
         if form.is_valid:
-            filtered_subject = request.POST['subjects'] or None
-            latest_question_list.filter(subject=filtered_subject)
+            filtered_subject = request.POST.get('subjects', None)
+            if filtered_subject:
+                latest_question_list.filter(subject=filtered_subject)
     else:
         form = SubjectFilterForm()
 
@@ -69,6 +69,20 @@ def index(request):
         'filtered_subject': filtered_subject,
         'error_message': error_message,
     })
+
+def update_questions(request):
+
+    latest_question_list = Question.objects.order_by('-pub_date')
+
+    filtered_subject = request.GET.get('subjects', None)
+    if filtered_subject:
+        latest_question_list.filter(subject=filtered_subject)
+
+    data = {
+        'latest_question_list': latest_question_list,
+        'filtered_subject': filtered_subject
+    }
+    return render(request, 'polls/index.html', data)
 
 def detail(request, question_id):
      question = get_object_or_404(Question, pk=question_id)

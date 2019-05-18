@@ -1,21 +1,53 @@
 ﻿{% extends "app/layout.html" %}
+
+{% block scripts %}
+<script>
+    $("#id_subjects").change(function () {
+        var form = $(this).closest("form");
+        $.ajax({
+            url: form.attr("data-update-questions-url"),
+            data: form.serialize(),
+            dataType: 'html',
+            success: function (data) {
+                var questionsDiv = $(data).find('#questions-div');
+                $('#questions-div').html(questionsDiv.html());
+            }
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
+<form method="POST" class="form-horizontal" data-update-questions-url="{% url 'update_questions' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+</form>
+
 {% if latest_question_list %}
+<div id="questions-div">
     <ul>
     {% for question in latest_question_list %}
-        <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+        {% if not filtered_subject or filtered_subject == question.subject %}
+            <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+        {% endif %}
     {% endfor %}
     </ul>
-  
+</div>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
 {% if request.user.is_authenticated %}
-<a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
+    <a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
+{% endif %}
+
+{% if error_message %}
+    <div class="alert alert-danger">{{ error_message }}</div>
 {% endif %}
 
 {% endblock %}

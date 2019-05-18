@@ -39,4 +39,13 @@ class BootstrapAuthenticationForm(AuthenticationForm):
                                    }))
 
 class SubjectFilterForm(forms.Form):
-    subjects = forms.ModelChoiceField(queryset=Question.objects.values_list('subject', flat=True).distinct())
+    subjects = forms.ChoiceField(required=False, 
+                                 label='Show subjects',
+                                 widget=forms.Select(attrs={'onchange': 'this.form.submit();'}), 
+                                 )
+
+    def __init__(self, *args, **kwargs):
+        super(SubjectFilterForm, self).__init__(*args, **kwargs)
+        
+        subjects_query = Question.objects.values_list('subject', flat=True).distinct()
+        self.fields['subjects'].choices = [('', 'All')] + [(subject, subject) for subject in subjects_query]

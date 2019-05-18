@@ -48,47 +48,27 @@ def about(request):
             'year':datetime.now().year,
         })
 
-def index(request, subject_filter=None):
+def index(request):
+
+    latest_question_list = Question.objects.order_by('-pub_date')
+    filtered_subject = None
 
     if request.method == "POST":
         form = SubjectFilterForm(request.POST)
         if form.is_valid:
-            #redirect to the url where you'll process the input
-            return HttpResponseRedirect(reverse('filtered_index', args=(form.subjects,))) # insert reverse or url
+            filtered_subject = request.POST['subjects'] or None
+            latest_question_list.filter(subject=filtered_subject)
     else:
         form = SubjectFilterForm()
 
-    #subject_list = Question.objects.values_list('subject', flat=True).distinct()
-    latest_question_list = Question.objects.order_by('-pub_date')
-
-    if subject_filter:
-        latest_question_list.filter(subject = subject_filter)
-    
-    #template = loader.get_template('polls/index.html')
-
-    error_message = form.errors or None # form not submitted or it has errors
+    error_message = form.errors or None # Form not submitted or it has errors
     return render(request, 'polls/index.html', {
         'title': 'Lista de preguntas de la encuesta',
         'latest_question_list': latest_question_list,
         'form': form,
+        'filtered_subject': filtered_subject,
         'error_message': error_message,
     })
-
-#def show_book(request):
-    
-#    if request.method == "POST":
-#        form = SubjectFilterForm(request.POST)
-#        if form.is_valid:
-#            #redirect to the url where you'll process the input
-#            return HttpResponseRedirect(reverse('results', args=(p.id,))) # insert reverse or url
-#    else:
-#        form = SubjectFilterForm()
-
-#    error_message = form.errors or None # form not submitted or it has errors
-#    return render(request, 'path/to/template.html',{
-#            'form': form,
-#            'error_message': error_message,
-#    })
 
 def detail(request, question_id):
      question = get_object_or_404(Question, pk=question_id)
